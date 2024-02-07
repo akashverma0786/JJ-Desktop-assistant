@@ -2,6 +2,9 @@ import pyttsx3
 import speech_recognition as sr
 from greetme import greetMe
 from searchNow import searchGoogle, searchWikipedia, searchYouTube
+import requests
+from bs4 import BeautifulSoup
+import datetime
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -66,3 +69,27 @@ if __name__ == "__main__":
 
                 elif "wikipedia" in query:
                     searchWikipedia(query)
+
+                elif "temperature" in query:
+                    search = "temperature in delhi"
+                    url = f"https://www.google.com/search?q={search}"
+                    r = requests.get(url)
+                    data = BeautifulSoup(r.text, "html.parser")
+                    temp = data.find("div", class_ = "BNeawe").text
+                    speak(f"current{search} is {temp}")
+
+                elif "weather" in query:
+                    search = "weather in delhi"
+                    url = f"https://www.google.com/search?q={search}"
+                    r = requests.get(url)
+                    data = BeautifulSoup(r.text, "html.parser")
+                    weather = data.find("div", class_ = "BNeawe").text
+                    speak(f"current{search} is {weather}")
+                
+                elif "what is the time" in query:
+                    cur_time = datetime.datetime.now().strftime("%H:%M")
+                    speak(f"Sir, the time is {cur_time}")
+
+                elif "finally sleep" in query:
+                    speak("Going to sleep , Sir!")
+                    exit()
