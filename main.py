@@ -6,6 +6,11 @@ import requests
 from bs4 import BeautifulSoup
 import datetime
 from actions.dictapp import openwebapp, closeappweb
+import os
+import pyautogui
+from actions.keyboard import volumeUp, volumeDown
+import random
+import webbrowser
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -37,6 +42,13 @@ def takeCommand():
         print("say that again")
         return "None"
     return query
+
+def alarm(query):
+    timeHere = open("alarmtext.txt", "a")
+    timeHere.write(query)
+    timeHere.close()
+    os.startfile("alarm.py")
+
 
 if __name__ == "__main__":
     while True:
@@ -77,6 +89,44 @@ if __name__ == "__main__":
                 elif "wikipedia" in query:
                     searchWikipedia(query)
 
+                elif "set an alarm" in query:
+                    print("input time example - hours and minutes and seconds")
+                    speak("set the time")
+                    a = input("Please tell the time : ")
+                    alarm(a)
+                    speak("Done, Sir!")
+
+                elif "i am tired" in query:
+                    speak("playing your favourite playlist now")
+                    a = (1, 2, 3)
+                    b = random.choice(a)
+                    if b == 1:
+                        webbrowser.open("https://www.youtube.com/watch?v=mt9xg0mmt28")
+                    elif b == 2:
+                        webbrowser.open("https://www.youtube.com/watch?v=dTu5dTEzVM4")
+                    else:
+                        webbrowser.open("https://www.youtube.com/watch?v=v2EYFtXR2kY")
+
+                elif "pause" in query:
+                    pyautogui.press("k")
+                    speak("video Paused")
+
+                elif "play" in query:
+                    pyautogui.press("k")
+                    speak("video played")
+
+                elif "mute" in query:
+                    pyautogui.press("m")
+                    speak("video muted")
+
+                elif "volume up" in query:
+                    speak("turning the volume up, Sir!")
+                    volumeUp()
+
+                elif "volume down" in query:
+                    speak("turning the volume down, Sir!")
+                    volumeDown()
+
                 elif "temperature" in query:
                     search = "temperature in delhi"
                     url = f"https://www.google.com/search?q={search}"
@@ -93,10 +143,22 @@ if __name__ == "__main__":
                     weather = data.find("div", class_ = "BNeawe").text
                     speak(f"current{search} is {weather}")
                 
-                elif "what is the time" in query:
+                elif "what is the time" in query or "the time" in query:
                     cur_time = datetime.datetime.now().strftime("%H:%M")
                     speak(f"Sir, the time is {cur_time}")
 
                 elif "finally sleep" in query:
                     speak("Going to sleep , Sir!")
                     exit()
+
+                elif "remember that" in query:
+                    message = query.replace("remember that", "")
+                    message = query.replace("jj", "")
+                    speak("You want me to remember" + message)
+                    remember = open("remember.txt", "a")
+                    remember.write(message)
+                    remember.close()
+
+                elif "what do you remember" in query or "read me what you remember" in query:
+                    remember = open("remember.txt", "r")
+                    speak("You told me to" + remember.read())
