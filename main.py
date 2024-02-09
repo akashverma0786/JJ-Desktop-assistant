@@ -1,10 +1,11 @@
 import pyttsx3
 import speech_recognition as sr
-from greetme import greetMe
-from searchNow import searchGoogle, searchWikipedia, searchYouTube
+from actions.greetme import greetMe
+from actions.searchNow import searchGoogle, searchWikipedia, searchYouTube
 import requests
 from bs4 import BeautifulSoup
 import datetime
+from actions.dictapp import openwebapp, closeappweb
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -60,6 +61,12 @@ if __name__ == "__main__":
 
                 elif "Thank you" in query:
                     speak("You'r welcome, sir!")
+
+                elif "open" in query:
+                    openwebapp(query)
+
+                elif "close" in query:
+                    closeappweb(query)
 
                 elif "google" in query:
                     searchGoogle(query)
