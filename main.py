@@ -11,6 +11,29 @@ import pyautogui
 from actions.keyboard import volumeUp, volumeDown
 import random
 import webbrowser
+from actions.news import latestNews
+from actions.calculator import cal
+from actions.whatsapp import sendMessage
+from plyer import notification
+from pygame import mixer
+import speedtest
+from actions.userInterface import play_gif
+
+for i in range(3):
+    a = input("enter password to load Jarvis: ")
+    pw_file = open("password.txt", "r")
+    pw = pw_file.read()
+    pw_file.close()
+    if (a == pw):
+        print("Welcome, sir! please say [Wake Up] to load me up")
+        break
+    elif (i == 2 and a != pw):
+        exit()
+
+    elif (a != pw):
+        print("Try again \n")
+
+play_gif
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -61,6 +84,87 @@ if __name__ == "__main__":
                 if "go to sleep" in query:
                     speak("Ok sir, You can call me anytime!")
                     break
+
+                elif "change password" in query:
+                    speak("What's the new password? ")
+                    new_pw = input("Enter the new password")
+                    new_password = open("password.txt", "w")
+                    new_password.write(new_pw)
+                    new_password.close()
+                    speak("Your password is no changed!")
+
+                elif "scedule my day" in query:
+                    tasks = []
+                    speak("Do you want to clear old tasks? [please speak yes or no]")
+                    query = takeCommand().lower()
+                    if "yes" in query:
+                        file = open("tasks.txt", "w")
+                        file.write(f"")
+                        file.close()
+                        no_tasks = int(input("Enter the number of tasks :-"))
+                        i = 0
+                        for i in range(no_tasks):
+                            tasks.append(input("Enter the task :- "))
+                            file = open("tasks.txt", "a")
+                            file.write(f"{i}. {tasks[i]} \n")
+                            file.close()
+                    elif "no" in query:
+                        no_tasks = int(input("Enter the number of tasks :-"))
+                        i = 0
+                        for i in range(no_tasks):
+                            tasks.append(input("Enter the task :- "))
+                            file = open("tasks.txt", "a")
+                            file.write(f"{i}. {tasks[i]} \n")
+                            file.close()
+
+                elif "show my schedule" in query:
+                    file = open("tasks.txt", "r")
+                    content = file.read()
+                    file.close()
+                    mixer.init()
+                    mixer.music.load("notification.mp3")
+                    mixer.music.play()
+                    notification.notify(
+                        title = "My schedule:- ",
+                        message = content,
+                        timeout = 15
+                    )
+
+                # Using pyautogui
+                elif "open" in query:
+                    query = query.replace("jj", "")
+                    query = query.replace("open", "")
+                    pyautogui.press("super")
+                    pyautogui.typewrite(query)
+                    pyautogui.press("enter")
+
+                elif "internet speed" in query:
+                    wifi = speedtest.Speedtest()
+                    upload_net = wifi.upload()/1048576 # 1 megabye = 1024 * 1024 bytes
+                    download_net = wifi.download()/1048576
+                    print(f"upload speed: {upload_net}, Download speed {download_net}")
+                    speak(f"Upload speed is {upload_net} and Download speed is {download_net}")
+
+                elif "cricket score" in query:
+                    url = "https://www.cricbuzz.com/"
+                    page = requests.get(url)
+                    soup = BeautifulSoup(page.text, "html.parser")
+                    team1 = soup.find_all(class_ = "cb-over-flo cb-hmscg-tm-nm")[0].get_text()
+                    team2 = soup.find_all(class_ = "cb-over-flo cb-hmscg-tm-nm")[1].get_text()
+                    team1_score = soup.find_all(class_ = "cb-ovr-flo")[8].get_text()
+                    team2_score = soup.find_all(class_ = "cb-ovr-flo")[10].get_text()
+
+                    a = print(f"{team1} : {team1_score}")
+                    b = print(f"{team2} : {team2_score}")
+
+                    notification.notify(
+                        title = "current score",
+                        message = f"{team1} : {team1_score} \n {team2} : {team2_score}",
+                        timeout = 10
+                    )
+
+                elif "play a game" in query:
+                    pass
                 
                 elif "hello" in query:
                     speak("hello Sir, How are you?")
@@ -88,6 +192,17 @@ if __name__ == "__main__":
 
                 elif "wikipedia" in query:
                     searchWikipedia(query)
+
+                elif "news" in query:
+                    latestNews()
+
+                elif "calculator" in query or "calculate" in query:
+                    query = query.replace("jarvis", "")
+                    query = query.replace("calculate", "")
+                    cal(query)()
+                    
+                elif "whatsapp" in query:
+                    sendMessage()
 
                 elif "set an alarm" in query:
                     print("input time example - hours and minutes and seconds")
@@ -162,3 +277,11 @@ if __name__ == "__main__":
                 elif "what do you remember" in query or "read me what you remember" in query:
                     remember = open("remember.txt", "r")
                     speak("You told me to" + remember.read())
+
+                elif "shutdown" in query:
+                    speak("Are you sure you want to shutdown the system")
+                    shutdown = str(input("Do you wish to shutdown you system? y/n: ")).lower()
+                    if shutdown == "y":
+                        os.system("shutdown /s /t 1")
+                    elif shutdown == "n":
+                        break
