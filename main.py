@@ -18,6 +18,9 @@ from plyer import notification
 from pygame import mixer
 import speedtest
 from actions.userInterface import play_gif
+from actions.game import game_play
+from actions.focusgraph import focus_graph
+from actions.translator import translategl
 
 for i in range(3):
     a = input("enter password to load Jarvis: ")
@@ -33,7 +36,7 @@ for i in range(3):
     elif (a != pw):
         print("Try again \n")
 
-play_gif
+play_gif()
 
 engine = pyttsx3.init("sapi5")
 voices = engine.getProperty("voices")
@@ -130,6 +133,24 @@ if __name__ == "__main__":
                         timeout = 15
                     )
 
+                elif "Focus mode" in query:
+                    a = str(input("Are you sur, You want to enter focus mode: y/n")).lower()
+                    if a == "y":
+                        speak("Entering the Focus Mode")
+                        os.startfile("C:\\Users\\hp\Desktop\\jjAI\\actions\\focusmode.py")
+                        exit()
+                    else:
+                        pass
+
+                elif "Show my focus" in query:
+                    focus_graph()
+
+                elif "translate" in query:
+                    query = query.replace("jj", "")
+                    query = query.replace("please", "")
+                    query = query.replace("translate", "")
+                    translategl(query)
+
                 # Using pyautogui
                 elif "open" in query:
                     query = query.replace("jj", "")
@@ -164,7 +185,22 @@ if __name__ == "__main__":
                     )
 
                 elif "play a game" in query:
-                    pass
+                    game_play()
+
+                elif "screenshot" in query:
+                    i = 0
+                    im = pyautogui.screenshot()
+                    im.save(f"ss_{i}.jpg")
+                    i += 1
+
+                elif "Click my photo" in query:
+                    # super act as pressing windows button and then searching 
+                    pyautogui.press("super")
+                    pyautogui.typewrite("Camera")
+                    pyautogui.press("enter")
+                    pyautogui.sleep(3)
+                    speak("smile")
+                    pyautogui.press("enter")
                 
                 elif "hello" in query:
                     speak("hello Sir, How are you?")
